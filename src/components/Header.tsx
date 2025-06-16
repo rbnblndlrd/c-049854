@@ -1,57 +1,131 @@
 
-import { useState } from "react";
-import { Search, Bell, RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { useSubscription } from '@/hooks/useSubscription';
+import { LanguageToggle } from '@/components/LanguageToggle';
+import HeaderLogo from '@/components/header/HeaderLogo';
+import NavigationItems from '@/components/header/NavigationItems';
+import UserMenu from '@/components/header/UserMenu';
+import MobileMenu from '@/components/header/MobileMenu';
 
-interface HeaderProps {
-  onRefresh: () => void;
-  isLoading?: boolean;
-}
+const Header = () => {
+  const { user, signOut } = useAuth();
+  const { currentTier } = useSubscription();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-export default function Header({ onRefresh, isLoading = false }: HeaderProps) {
-  const [searchValue, setSearchValue] = useState("");
-  const isMobile = useIsMobile();
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  // Get page title based on current route
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/analytics' || path === '/dashboard') return 'Business Analytics';
+    if (path === '/analytics/insights') return 'Business Insights';
+    if (path === '/analytics/reports') return 'Tax & Reports';
+    if (path === '/analytics/intelligence') return 'Market Intelligence';
+    if (path === '/analytics/performance') return 'Performance Dashboard';
+    if (path === '/provider-dashboard') return 'Provider Dashboard';
+    return null;
+  };
+
+  const pageTitle = getPageTitle();
 
   return (
-    <header className="bg-background py-3 px-4 md:px-8 border-b border-border flex items-center justify-between animate-fade-in">
-      <div className="flex-1">
-        <h1 className="text-xl font-medium">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Your crypto insights for {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-        </p>
-      </div>
-
-      <div className="flex items-center gap-3">
-        <button
-          onClick={onRefresh}
-          className={cn(
-            "h-9 w-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-secondary hover:bg-secondary/80",
-            isLoading && "animate-pulse"
-          )}
-          disabled={isLoading}
-        >
-          <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
-        </button>
-        
-        <button className="h-9 w-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors bg-secondary hover:bg-secondary/80 relative">
-          <Bell size={16} />
-          <span className="absolute top-1 right-2 h-2 w-2 rounded-full bg-primary"></span>
-        </button>
-
-        <div className="h-9 relative hidden sm:block">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search size={16} className="text-muted-foreground" />
+    <header className="bg-black shadow-lg border-b border-gray-800 sticky top-0 z-50" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo with App Icon */}
+          <div className="flex items-center space-x-3 flex-shrink-0 mr-8">
+            {/* App Icon with Shadow */}
+            <div className="w-10 h-10 bg-gradient-to-br from-[#d50067] to-[#0067bd] rounded-lg flex items-center justify-center shadow-lg app-icon-shadow">
+              <span className="text-white font-bold text-lg">H</span>
+            </div>
+            <HeaderLogo />
           </div>
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search projects..."
-            className="pl-10 pr-4 py-2 h-full rounded-full text-sm bg-secondary border border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors w-[220px] md:w-[280px]"
-          />
+
+          {/* Page Title for Analytics Pages */}
+          {pageTitle && (
+            <div className="hidden lg:block">
+              <h1 className="text-lg font-semibold text-white">{pageTitle}</h1>
+            </div>
+          )}
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center justify-end flex-1 space-x-1">
+            <nav className="flex items-center space-x-1">
+              <NavigationItems isLoggedIn={!!user} />
+              
+              {/* HOUSIE Pro - Always visible */}
+              <Link to="/pricing" className="uber-nav-item text-white hover:text-white hover:bg-gray-800 transition-all duration-200 px-4 py-2 rounded-lg text-sm whitespace-nowrap">
+                HOUSIE Pro
+              </Link>
+            </nav>
+            
+            {/* Desktop Controls */}
+            <div className="flex items-center space-x-3 ml-6">
+              {/* Language Toggle */}
+              <div className="flex-shrink-0">
+                <LanguageToggle />
+              </div>
+              
+              {/* User Menu - Desktop only */}
+              <div className="flex-shrink-0">
+                <UserMenu 
+                  user={user} 
+                  currentTier={currentTier} 
+                  signOut={signOut}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile/Tablet Controls */}
+          <div className="flex lg:hidden items-center space-x-2">
+            {/* Language toggle for tablet only */}
+            <div className="hidden md:flex lg:hidden items-center space-x-2">
+              <LanguageToggle />
+            </div>
+            
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative z-50 text-white hover:bg-gray-800"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="lg:hidden">
+            <MobileMenu
+              isOpen={isMenuOpen}
+              user={user}
+              currentTier={currentTier}
+              onClose={closeMobileMenu}
+              handleSignOut={handleSignOut}
+            />
+          </div>
+        )}
       </div>
     </header>
   );
-}
+};
+
+export default Header;
