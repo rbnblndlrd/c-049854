@@ -28,39 +28,17 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
-  // Get page title based on current route
-  const getPageTitle = () => {
-    const path = location.pathname;
-    if (path === '/analytics' || path === '/dashboard') return 'Business Analytics';
-    if (path === '/analytics/insights') return 'Business Insights';
-    if (path === '/analytics/reports') return 'Tax & Reports';
-    if (path === '/analytics/intelligence') return 'Market Intelligence';
-    if (path === '/analytics/performance') return 'Performance Dashboard';
-    if (path === '/provider-dashboard') return 'Provider Dashboard';
-    return null;
-  };
-
-  const pageTitle = getPageTitle();
-
   return (
-    <header className="bg-black shadow-lg border-b border-gray-800 sticky top-0 z-50" style={{ backgroundColor: 'rgba(0, 0, 0, 0.95)' }}>
+    <header className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo with App Icon */}
+          {/* Logo */}
           <div className="flex items-center space-x-3 flex-shrink-0 mr-8">
-            {/* App Icon with Shadow */}
-            <div className="w-10 h-10 bg-gradient-to-br from-[#d50067] to-[#0067bd] rounded-lg flex items-center justify-center shadow-lg app-icon-shadow">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">H</span>
             </div>
             <HeaderLogo />
           </div>
-
-          {/* Page Title for Analytics Pages */}
-          {pageTitle && (
-            <div className="hidden lg:block">
-              <h1 className="text-lg font-semibold text-white">{pageTitle}</h1>
-            </div>
-          )}
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center justify-end flex-1 space-x-1">
@@ -68,7 +46,7 @@ const Header = () => {
               <NavigationItems isLoggedIn={!!user} />
               
               {/* HOUSIE Pro - Always visible */}
-              <Link to="/pricing" className="uber-nav-item text-white hover:text-white hover:bg-gray-800 transition-all duration-200 px-4 py-2 rounded-lg text-sm whitespace-nowrap">
+              <Link to="/pricing" className="text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all duration-200 px-4 py-2 rounded-lg text-sm whitespace-nowrap">
                 HOUSIE Pro
               </Link>
             </nav>
@@ -103,7 +81,7 @@ const Header = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative z-50 text-white hover:bg-gray-800"
+              className="relative z-50 text-gray-700 hover:bg-gray-100"
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

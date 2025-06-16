@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 interface User {
   id: string;
@@ -17,17 +19,31 @@ const UserMenu = ({ user, currentTier, signOut }: UserMenuProps) => {
   if (!user) {
     return (
       <div className="flex items-center space-x-2">
-        <button className="text-white hover:text-gray-300">Sign In</button>
+        <Link to="/auth">
+          <Button variant="outline" size="sm">
+            Sign In
+          </Button>
+        </Link>
+        <Link to="/auth">
+          <Button size="sm">
+            Sign Up
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-white">{user.name}</span>
-      <button onClick={signOut} className="text-white hover:text-gray-300">
+      <span className="text-sm text-gray-700">Hello, {user.name || user.email}</span>
+      <Link to="/my-profile">
+        <Button variant="outline" size="sm">
+          Profile
+        </Button>
+      </Link>
+      <Button variant="ghost" size="sm" onClick={signOut}>
         Sign Out
-      </button>
+      </Button>
     </div>
   );
 };
