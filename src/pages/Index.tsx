@@ -37,7 +37,7 @@ export default function Index() {
       <Sidebar />
       
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <Header onRefresh={refreshData} isLoading={loading} />
+        <Header />
         
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <div className="max-w-screen-2xl mx-auto space-y-6">
